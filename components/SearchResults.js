@@ -1,6 +1,16 @@
 import useSWR from "swr";
+import React from 'react';
+import { Card, CardContent, makeStyles, Typography } from '@material-ui/core';
+
+const useStyles = makeStyles({
+  root: {
+    minWidth: 275,
+    margin: "4px",
+  },
+});
 
 export default function SearchResults({ keyWord }) {
+  const classes = useStyles();
   const fetcher = (...args) => fetch(...args).then((res) => res.json());
   const { data, error } = useSWR(
     `https://api.magicthegathering.io/v1/cards?name=${keyWord}`,
@@ -10,17 +20,24 @@ export default function SearchResults({ keyWord }) {
   if (error) return <div>failed to load</div>;
 
   return (
-    <div>
+    <>
       {data ? (
         data.cards.map((card) => (
-          <div key={card.id}>
-            <h3>{card.name}</h3>
-            <img alt={card.name} src={card.imageUrl} />
-          </div>
+          <Card className={classes.root} key={card.id}>
+            <CardContent>
+              <Typography
+                color="textSecondary"
+                gutterBottom
+              >
+                {card.name}
+              </Typography>
+              <img alt={card.name} src={card.imageUrl} />
+            </CardContent>
+          </Card>
         ))
       ) : (
         <div>loading...</div>
       )}
-    </div>
+    </>
   );
 }
